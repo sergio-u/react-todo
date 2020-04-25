@@ -1,36 +1,53 @@
 import React, {useContext, useEffect, useState} from 'react';
 import {TodosContext} from "./TodosProvider";
 
-const Todo = ({id, todo}) => {
+const Todo = ({todo}) => {
     const {actions: {remove, toggle}} = useContext(TodosContext);
-    const {name} = todo;
+    const {description} = todo;
     const [status, setStatus] = useState(todo.status);
 
     useEffect(() => {
-        const el = document.getElementById(id);
-        if (!status) {
-            el.classList.remove("done");
-        } else {
-            el.classList.add("done");
+        const el = document.getElementById(todo.id);
+        if (el) {
+            if (status === 'pending') {
+                el.classList.remove("done");
+            } else {
+                el.classList.add("done");
+            }
         }
-    }, [status]);
+    }, [status, todo.id]);
 
-    const handleToggle = () => {
-        console.log(id, " ", name);
-        const newStatus = !status;
+    const handleToggle = async () => {
+        console.log(todo.id, " ", description);
+        const newStatus = status === 'pending' ? 'done' : 'pending';
         setStatus(newStatus);
-        toggle(id, newStatus);
+        toggle(todo.id, newStatus);
+        await fetch(`${process.env.REACT_APP_BACKEND}/tasks/${todo.id}/${newStatus}`,
+            {
+                method: 'post',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
     }
 
-    const handleDelete = () => {
-        console.log(id, " ", name);
-        remove(id);
+    const handleDelete = async () => {
+        console.log(todo.id, " ", description);
+        remove(todo.id);
+        await fetch(`${process.env.REACT_APP_BACKEND}/tasks/${todo.id}`,
+            {
+                method: 'delete',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
     }
 
     return (
         <>
-            <p>{id}</p>
-            <p>{name}</p>
+            <p>{todo.id}</p>
+            <p>{description}</p>
             <button onClick={handleToggle}>Toggle</button>
             <button onClick={handleDelete}>Delete</button>
         </>

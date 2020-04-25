@@ -6,18 +6,23 @@ const TodoForm = () => {
     const {actions: {add}} = useContext(TodosContext)
     let lastTodo = "";
     const postTodo = async () => {
-        const res = await fetch(`${process.env.REACT_APP_BACKEND}/`,
+        const res = await fetch(`${process.env.REACT_APP_BACKEND}/tasks`,
             {
                 method: 'post',
-                body: JSON.stringify(lastTodo)
+                body: JSON.stringify({description: todo}),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                }
             });
-        console.log(res);
+        return res;
     }
-    const handleCreate = () => {
+    const handleCreate = async () => {
+        const res = await postTodo();
+        const todo = await res.json();
+        console.log("RES",todo);
         add(todo);
-        lastTodo = todo;
         setTodo("");
-        //postTodo();
     }
     return (
         <div>
