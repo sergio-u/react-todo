@@ -1,10 +1,4 @@
-export const initialState = [
-    {
-        description: "Create a new task!",
-        status: "pending",
-        id:1
-    }
-]
+export const initialState = []
 const ADD = "ADD";
 const TOGGLE = "TOGGLE";
 const DELETE = "DELETE";
@@ -25,7 +19,6 @@ export const todosReducer = (state, action) => {
             console.log("DELETE");
             console.log(state, action);
             return state.filter((todo) => action.payload.todoId !== todo.id);
-            return state;
         default:
             console.log(state, action);
             return state;
